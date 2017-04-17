@@ -1,9 +1,10 @@
 var image = "haproxy:1.6.4";
 var configPath = "/usr/local/etc/haproxy/haproxy.cfg";
 
-function Haproxy(n, services, port) {
+function Haproxy(n, services, port, balance) {
     services = Array.isArray(services) ? services : [services];
     port = port || 80;
+    balance = balance || "roundrobin";
 
     var hostnames = _.flatten(services.map(function(service) {
       return service.children();
@@ -13,7 +14,7 @@ function Haproxy(n, services, port) {
     });
 
     var files = {};
-    files[configPath] = buildConfig(addresses);
+    files[configPath] = buildConfig(addresses, balance);
     var hapRef = new Container(image,
         ["haproxy-systemd-wrapper", "-p", "/run/haproxy.pid", "-f", configPath]
     ).withFiles(files);
@@ -32,8 +33,9 @@ function Haproxy(n, services, port) {
     };
 };
 
-function buildConfig(addrs) {
+function buildConfig(addrs, balance) {
     var config = read("./haproxy.cfg");
+    config += "\n    balance " + balance;
     for (var i = 0 ; i < addrs.length; i++) {
         config += "\n    server " + i + " " + addrs[i] + " check resolvers dns";
     }
