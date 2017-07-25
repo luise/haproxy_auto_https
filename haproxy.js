@@ -26,11 +26,11 @@ function Haproxy(n, services, port, balance) {
 
     this.service = new Service("hap", hapRef.replicate(n));
     services.forEach(function(service) {
-      this.service.connect(port, service);
+      service.allowFrom(this.service, port);
     }.bind(this));
 
     this.public = function() {
-      publicInternet.connect(80, this.service);
+      this.service.allowFrom(publicInternet, 80);
     };
 
     this.deploy = function(deployment) {
