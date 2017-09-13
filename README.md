@@ -21,7 +21,13 @@ HAProxy will communicate with the containers behind it on port 80.
 const {Container} = require('@quilt/quilt');
 const haproxy = require('@quilt/haproxy');
 
-const proxy = haproxy.simpleLoadBalancer(new Container('web', 'nginx').replicate(3)));
+// Create 3 nginx containers
+const nginxContainers = [];
+for (let i = 0; i < 3; i += 1) {
+  nginxContainers.push(new Container('web', 'nginx'));
+}
+
+const proxy = haproxy.simpleLoadBalancer(nginxContainers);
 ```
 The `proxy` variable now refers to a HAProxy container that does
 roundrobin load balancing over 3 nginx containers.
@@ -44,9 +50,19 @@ HAProxy will communicate with the services behind it on port 80.
 #### Example
 
 ```javascript
+const webAContainers = [];
+for (let i = 0; i < 3; i += 1) {
+  webAContainers.push(new Container('webA', 'nginx'));
+}
+
+const webBContainers = [];
+for (let i = 0; i < 2; i += 1) {
+  webBContainers.push(new Container('webB', 'nginx'));
+}
+
 const proxy = haproxy.withURLrouting({
- 	'webA.com': new Container('webA', 'nginx').replicate(3),
-	'webB.com': new Container('webB', 'nginx').replicate(2),
+  'webA.com': webAContainers,
+  'webB.com': webBContainers,
 });
 ```
 

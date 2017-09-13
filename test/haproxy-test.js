@@ -31,11 +31,14 @@ frontend http-in
 backend default
     balance roundrobin
     cookie SERVERID insert indirect nocache
+    server foo.q foo.q:80 check resolvers dns cookie foo.q
     server foo2.q foo2.q:80 check resolvers dns cookie foo2.q
-    server foo3.q foo3.q:80 check resolvers dns cookie foo3.q
 `;
 
-      const containers = new quilt.Container('foo', 'image').replicate(2);
+      const containers = [];
+      for (let i = 0; i < 2; i += 1) {
+        containers.push(new quilt.Container('foo', 'image'));
+      }
       const hap = haproxy.simpleLoadBalancer(containers);
       assert.equal(hap.filepathToContent['/usr/local/etc/haproxy/haproxy.cfg'],
         expConfig);
