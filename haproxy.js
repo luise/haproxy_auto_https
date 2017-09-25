@@ -141,7 +141,7 @@ function withURLrouting(domainToContainers, balance = 'roundrobin') {
     .join('\n\n');
   const files = createConfigFiles(frontendConfig, backendConfig);
 
-  const allContainers = Object.values(domainToContainers)
+  const allContainers = domains.map(domain => domainToContainers[domain])
     .reduce((a, b) => a.concat(b), []);
   return createHapContainer(allContainers, files);
 }
