@@ -2,16 +2,17 @@
 
 const assert = require('chai').assert;
 const kelda = require('kelda');
-const haproxy = require('../haproxy');
+const haproxy = require('../haproxyAutoHttps');
 
-describe('haproxy', () => {
+describe('haproxy_auto_https', () => {
   beforeEach(() => {
     kelda.resetGlobals();
   });
 
-  describe('simpleLoadBalancer', () => {
+  describe('create', () => {
     it('config', () => {
       const expConfig = `global
+    tune.ssl.default-dh-param 2048
 
 defaults
     log     global
@@ -23,44 +24,14 @@ defaults
 resolvers dns
     nameserver gateway 10.0.0.1:53
 
-frontend http-in
-    bind *:80
-
-    default_backend default
-
-backend default
-    balance roundrobin
-    cookie SERVERID insert indirect nocache
-    server foo.q foo.q:80 check resolvers dns cookie foo.q
-    server foo2.q foo2.q:80 check resolvers dns cookie foo2.q
-`;
-
-      const containers = [];
-      for (let i = 0; i < 2; i += 1) {
-        containers.push(new kelda.Container('foo', 'image'));
-      }
-      const hap = haproxy.simpleLoadBalancer(containers);
-      assert.equal(hap.filepathToContent['/usr/local/etc/haproxy/haproxy.cfg'],
-        expConfig);
-    });
-  });
-
-  describe('withURLrouting', () => {
-    it('config', () => {
-      const expConfig = `global
-
-defaults
-    log     global
-    mode    http
-    timeout connect 5000
-    timeout client 5000
-    timeout server 5000
-
-resolvers dns
-    nameserver gateway 10.0.0.1:53
+backend acme-backend
+    server acme 127.0.0.1:8080
 
 frontend http-in
     bind *:80
+    bind *:443 ssl crt /etc/letsencrypt/live/kelda/combined.pem
+    acl acme-acl path_beg /.well-known/acme-challenge/
+    use_backend acme-backend if acme-acl
 
     acl domainA_req hdr(host) -i domainA
     use_backend domainA if domainA_req
@@ -81,7 +52,8 @@ backend domainB
 
       const domainA = [new kelda.Container('foo', 'image')];
       const domainB = [new kelda.Container('bar', 'image')];
-      const hap = haproxy.withURLrouting({ domainA, domainB });
+      const email = 'test@example.com';
+      const hap = haproxy.create({ domainA, domainB }, email);
       assert.equal(hap.filepathToContent['/usr/local/etc/haproxy/haproxy.cfg'],
         expConfig);
     });

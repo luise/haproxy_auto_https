@@ -1,8 +1,12 @@
 # HAProxy Examples with Kelda
 
-This directory contains examples for Kelda's HAProxy blueprint.
+This directory contains an example for Kelda's HAProxy blueprint.
+This blueprint boots two applications with the domain names `apples.com` and
+`oranges.com` respectively, and fetches a valid HTTPS certificate for them
+from Let's Encrypt. Both applications sit behind the HAProxy load
+balancer, so they will have the same IP address. This example has a lot of
+moving parts and requires some personalized setup:
 
-To run the example blueprints:
 1. [**Install Kelda**](http://docs.kelda.io/#installing-kelda) with
     ```console
     $ npm install -g @kelda/install
@@ -15,49 +19,23 @@ To run the example blueprints:
 4. **Install dependencies** by running `npm install` in the cloned
   `haproxy` directory.
 5. **Start Kelda** by running `kelda daemon` in a different terminal window.
-6. **Boot the applications** by running one of the following commands from
+6. **Reserve a floating IP address** with your cloud provider of choice.
+7. **Buy a domain name** through a registrar like Namecheap.
+8. **Configure the domain's DNS** to map the domain or sub-domains to the floating IP.
+9. **Edit the example blueprint** to replace your own email address, domain name(s), and floating
+  IP address in `haproxyHttpsExample.js`. You'll need to change all of the lines marked `XXX: CHANGE ME!`.
+  
+  Optionally change the line with `testing_cert: true` to `testing_cert: false` (or remove that argument altogether)
+  to request a real Let's Encrypt certificate as opposed to a testing certificate. Testing certificates
+  are not trusted by browsers. However, they are not rate limited, making them suitable for development.
+10. **Boot the applications** by running the following command from
   this `haproxy/examples` directory.
 
     ```console
-    $ kelda run ./haproxyExampleSingleApp.js
+    $ kelda run ./haproxyHttpsExample.js
     ```
-    or
-    ```console
-    $ kelda run ./haproxyExampleMultipleApps.js
-    ```
-7. **Stop the deployment** with `kelda stop` when you're done, and then kill
-  the daemon with ctrl+c.
-
-## Accessing the applications
-#### `haproxyExampleSingleApp.js`
-Use `kelda show` to check the status of the deployment. When all the containers
-are running, simply copy paste the `PUBLIC IP` of the `haproxy` container into
-a browser. If everything booted correctly, it should say "Hello, world!".
-
-#### `haproxyExampleMultipleApps.js`
-This blueprint boots two applications with the domain names `apples.com` and
-`oranges.com` respectively. Both applications sit behind the HAProxy load
-balancer, so they will have the same IP address. For that reason, we can't
-simply access the applications through the IP as we did above.
-
-Instead, we have to also include the domain name of the application we want to
-access. This way the load balancer knows which servers to redirect our request
-to. When all the containers are `running`, check that you can access both
-applications by running the following commands from your terminal, and checking
-the responses:
-
-```console
-$ curl -H "Host: apples.com" HAPROXY_PUBLIC_IP
-Apples!
-$ curl -H "Host: oranges.com" HAPROXY_PUBLIC_IP
-Oranges!
-```
-
-To make your applications accessible through a browser, buy your domain names
-through a registrar like Namecheap, and map the domains to the IP of your
-`haproxy` container.
-
-**Remember to stop the deployment with `kelda stop`!**
+11. **Stop the deployment** with `kelda stop` when you're done, and then kill
+  the daemon with Ctrl+C.
 
 ## More Info
 For more details, check out our documentation for

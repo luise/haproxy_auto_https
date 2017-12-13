@@ -1,7 +1,7 @@
 {
-  "name": "@kelda/haproxy",
+  "name": "@kelda/haproxy_auto_https",
   "version": "0.3.0",
-  "main": "./haproxy.js",
+  "main": "./haproxyAutoHttps.js",
   "license": "MIT",
   "dependencies": {
     "kelda": "0.x",
