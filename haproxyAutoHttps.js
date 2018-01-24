@@ -1,4 +1,4 @@
-const { Container, publicInternet } = require('kelda');
+const { Container, publicInternet, allowTraffic } = require('kelda');
 const fs = require('fs');
 const path = require('path');
 const Mustache = require('mustache');
@@ -55,13 +55,11 @@ function createHapContainer(containers, files, env) {
     filepathToContent: files,
   });
 
-  containers.forEach((c) => {
-    c.allowFrom(haproxy, internalPort);
-  });
+  allowTraffic(haproxy, containers, internalPort);
 
   // We need to be able to make connections to the ACME endpoint.
-  publicInternet.allowFrom(haproxy, 80);
-  publicInternet.allowFrom(haproxy, 443);
+  allowTraffic(haproxy, publicInternet, 80);
+  allowTraffic(haproxy, publicInternet, 443);
 
   return haproxy;
 }

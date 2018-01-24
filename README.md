@@ -65,8 +65,8 @@ To make the proxy accessible from the public internet, simply add the following
 lines to your blueprint:
 
 ```javascript
-proxy.allowFrom(publicInternet, haproxy.exposedHttpPort);
-proxy.allowFrom(publicInternet, haproxy.exposedHttpsPort);
+allowTraffic(publicInternet, proxy, haproxy.exposedHttpPort);
+allowTraffic(publicInternet, proxy, haproxy.exposedHttpsPort);
 ```
 
 This will open ports 80 and 443 on the proxy instance.

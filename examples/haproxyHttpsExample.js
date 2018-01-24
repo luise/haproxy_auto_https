@@ -35,8 +35,8 @@ const loadBalancer = haproxy.create({
 }, emailAddress, { testing_cert: true }); // XXX: CHANGE ME?
 
 // Allow requests from the public internet to the load balancer on ports 80 and 443
-loadBalancer.allowFrom(kelda.publicInternet, haproxy.exposedHttpPort);
-loadBalancer.allowFrom(kelda.publicInternet, haproxy.exposedHttpsPort);
+kelda.allowTraffic(kelda.publicInternet, loadBalancer, haproxy.exposedHttpPort);
+kelda.allowTraffic(kelda.publicInternet, loadBalancer, haproxy.exposedHttpsPort);
 
 // Deploy the application containers and load balancer.
 const inf = kelda.baseInfrastructure();
