@@ -45,6 +45,7 @@ while True:
     command += ['--agree-tos', '--email', email]  # Register a Let's Encrypt account.
     if staging:
         command += ['--staging']  # Use the staging server.
+        command += ['-v']  # Be more verbose.
     command += ['--cert-name', 'kelda']
     command += ['--expand']  # Add new domains to the certificate automatically.
     command += ['--standalone', '--preferred-challenges', 'http-01']
