@@ -50,7 +50,9 @@ ${backendConfig}
  * @return {Container} The new HAProxy container.
  */
 function createHapContainer(containers, files, env) {
-  const haproxy = new Container('haproxy', image, {
+  const haproxy = new Container({
+    name: 'haproxy',
+    image,
     env,
     filepathToContent: files,
   });

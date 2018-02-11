@@ -32,12 +32,12 @@ HAProxy will communicate with the services behind it on port 80.
 ```javascript
 const webAContainers = [];
 for (let i = 0; i < 3; i += 1) {
-  webAContainers.push(new Container('webA', 'nginx'));
+  webAContainers.push(new Container({ name: 'webA', image: 'nginx' }));
 }
 
 const webBContainers = [];
 for (let i = 0; i < 2; i += 1) {
-  webBContainers.push(new Container('webB', 'nginx'));
+  webBContainers.push(new Container({ name: 'webB', image: 'nginx' }));
 }
 
 const emailAddress = 'you@example.com';
@@ -57,8 +57,8 @@ HAProxy IP address will be forwarded to the correct web server as determined by 
 `Host` header in the HTTP request. An HTTPS certificate for both domains will be
 automatically requested from Let's Encrypt and installed.
 
-All domains need to be pointing at the floating IP address assigned to the 
-proxy. 
+All domains need to be pointing at the floating IP address assigned to the
+proxy.
 
 ## Accessing the Proxy
 To make the proxy accessible from the public internet, simply add the following

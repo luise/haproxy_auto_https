@@ -50,8 +50,8 @@ backend domainB
     server bar.q bar.q:80 check resolvers dns cookie bar.q
 `;
 
-      const domainA = [new kelda.Container('foo', 'image')];
-      const domainB = [new kelda.Container('bar', 'image')];
+      const domainA = [new kelda.Container({ name: 'foo', image: 'image' })];
+      const domainB = [new kelda.Container({ name: 'bar', image: 'image' })];
       const email = 'test@example.com';
       const hap = haproxy.create({ domainA, domainB }, email);
       assert.equal(hap.filepathToContent['/usr/local/etc/haproxy/haproxy.cfg'],
